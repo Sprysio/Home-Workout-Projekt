@@ -11,14 +11,13 @@ import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
 
 @Component
-@RequiredArgsConstructor
-public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> {
+public class AuthGatewayFilterFactory extends AbstractGatewayFilterFactory<AuthGatewayFilterFactory.Config> {
 
     private final JwtUtil jwtUtil;
 
-    public AuthFilter() {
+    public AuthGatewayFilterFactory(JwtUtil jwtUtil) {
         super(Config.class);
-        this.jwtUtil = null;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override
@@ -38,7 +37,6 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
                 return onUnauthorized(exchange, "Invalid or expired token");
             }
 
-            // Forward the username as a header to downstream services
             String username = jwtUtil.extractUsername(token);
             ServerWebExchange mutatedExchange = exchange.mutate()
                     .request(r -> r.header("X-Auth-User", username))
@@ -54,7 +52,5 @@ public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> 
         return exchange.getResponse().setComplete();
     }
 
-    public static class Config {
-        // config fields can be added here if needed
-    }
+    public static class Config {}
 }
