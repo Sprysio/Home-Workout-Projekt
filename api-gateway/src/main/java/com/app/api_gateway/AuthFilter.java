@@ -1,0 +1,60 @@
+package com.app.gateway.filter;
+
+import com.app.gateway.util.JwtUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.cloud.gateway.filter.GatewayFilter;
+import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Component;
+import org.springframework.web.server.ServerWebExchange;
+import reactor.core.publisher.Mono;
+
+@Component
+@RequiredArgsConstructor
+public class AuthFilter extends AbstractGatewayFilterFactory<AuthFilter.Config> {
+
+    private final JwtUtil jwtUtil;
+
+    public AuthFilter() {
+        super(Config.class);
+        this.jwtUtil = null;
+    }
+
+    @Override
+    public GatewayFilter apply(Config config) {
+        return (exchange, chain) -> {
+            String authHeader = exchange.getRequest()
+                    .getHeaders()
+                    .getFirst(HttpHeaders.AUTHORIZATION);
+
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                return onUnauthorized(exchange, "Missing or invalid Authorization header");
+            }
+
+            String token = authHeader.substring(7);
+
+            if (!jwtUtil.isTokenValid(token)) {
+                return onUnauthorized(exchange, "Invalid or expired token");
+            }
+
+            // Forward the username as a header to downstream services
+            String username = jwtUtil.extractUsername(token);
+            ServerWebExchange mutatedExchange = exchange.mutate()
+                    .request(r -> r.header("X-Auth-User", username))
+                    .build();
+
+            return chain.filter(mutatedExchange);
+        };
+    }
+
+    private Mono<Void> onUnauthorized(ServerWebExchange exchange, String reason) {
+        exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+        exchange.getResponse().getHeaders().add("X-Auth-Error", reason);
+        return exchange.getResponse().setComplete();
+    }
+
+    public static class Config {
+        // config fields can be added here if needed
+    }
+}

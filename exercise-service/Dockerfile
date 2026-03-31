@@ -1,14 +1,25 @@
-# Build stage
-FROM maven:3.9-eclipse-temurin-17 AS build
+# ── Stage 1: Build ────────────────────────────────────────────────────────────
+FROM eclipse-temurin:17-jdk-alpine AS builder
 WORKDIR /app
-COPY pom.xml .
-RUN mvn dependency:go-offline -B
-COPY src ./src
-RUN mvn clean package -DskipTests
 
-# Run stage
+# Cache dependencies layer separately
+COPY pom.xml .
+COPY .mvn/ .mvn/
+COPY mvnw .
+RUN ./mvnw dependency:go-offline -q
+
+# Build the jar
+COPY src/ src/
+RUN ./mvnw package -DskipTests -q
+
+# ── Stage 2: Run ─────────────────────────────────────────────────────────────
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8083
+
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
+COPY --from=builder /app/target/api-gateway-*.jar app.jar
+
+EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

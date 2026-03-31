@@ -1,0 +1,84 @@
+spring:
+  application:
+    name: api-gateway
+
+  # Redis for rate limiting
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+
+  cloud:
+    gateway:
+      # Global CORS is handled by CorsConfig bean — disable gateway's built-in to avoid conflicts
+      globalcors:
+        add-to-simple-url-handler-mapping: false
+
+      routes:
+        # ── AUTH SERVICE ─────────────────────────────────────────────────────────
+        # Public: login & register — no JWT required
+        - id: auth-public
+          uri: http://${AUTH_SERVICE_HOST:auth-service}:8081
+          predicates:
+            - Path=/api/auth/**
+          filters:
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 10
+                redis-rate-limiter.burstCapacity: 20
+                key-resolver: "#{@userKeyResolver}"
+
+        # ── WORKOUT SERVICE ───────────────────────────────────────────────────────
+        - id: workout-service
+          uri: http://${WORKOUT_SERVICE_HOST:workout-service}:8082
+          predicates:
+            - Path=/api/workout/**
+          filters:
+            - AuthFilter          # JWT verification
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 20
+                redis-rate-limiter.burstCapacity: 40
+                key-resolver: "#{@userKeyResolver}"
+
+        # ── EXERCISE SERVICE ──────────────────────────────────────────────────────
+        - id: exercise-service
+          uri: http://${EXERCISE_SERVICE_HOST:exercise-service}:8083
+          predicates:
+            - Path=/api/exercise/**
+          filters:
+            - AuthFilter          # JWT verification
+            - name: RequestRateLimiter
+              args:
+                redis-rate-limiter.replenishRate: 20
+                redis-rate-limiter.burstCapacity: 40
+                key-resolver: "#{@userKeyResolver}"
+
+# JWT secret — use a Base64-encoded 256-bit key in production
+jwt:
+  secret: ${JWT_SECRET:bXlTdXBlclNlY3JldEtleVRoYXRJc0F0TGVhc3QzMkNoYXJhY3RlcnNMb25n}
+
+# Actuator
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, gateway
+  endpoint:
+    health:
+      show-details: always
+
+server:
+  port: 8080
+
+---
+# Docker profile — hostnames match docker-compose service names
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  data:
+    redis:
+      host: redis
+      port: 6379
