@@ -2,39 +2,70 @@ version: '3.8'
 
 services:
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
+    image: sprysio/homew-frontend:latest
     ports:
       - "3000:80"
+    depends_on:
+      - api-gateway
+
+  api-gateway:
+    image: yourdockerhubusername/homew-gateway:latest
+    ports:
+      - "8080:8080"
     depends_on:
       - auth-service
       - workout-service
       - exercise-service
+      - redis
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - JWT_SECRET=${JWT_SECRET}
 
   auth-service:
-    build:
-      context: ./auth-service
-      dockerfile: Dockerfile
-    ports:
-      - "8081:8081"
+    image: yourdockerhubusername/homew-auth:latest
+    depends_on:
+      - postgres
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - JWT_SECRET=${JWT_SECRET}   # same secret so tokens validate everywhere
 
   workout-service:
-    build:
-      context: ./workout-service
-      dockerfile: Dockerfile
-    ports:
-      - "8082:8082"
+    image: yourdockerhubusername/homew-workout:latest
+    depends_on:
+      - postgres
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - DB_HOST=postgres
+      - DB_PORT=5432
 
   exercise-service:
-    build:
-      context: ./exercise-service
-      dockerfile: Dockerfile
-    ports:
-      - "8083:8083"
+    image: yourdockerhubusername/homew-exercise:latest
+    depends_on:
+      - postgres
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - DB_HOST=postgres
+      - DB_PORT=5432
+
+  postgres:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: secret
+      POSTGRES_DB: appdb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # Redis — required for gateway rate limiting
+  redis:
+    image: redis:7-alpine
+    restart: always
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
