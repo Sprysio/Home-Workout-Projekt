@@ -1,10 +1,16 @@
-// java
 package com.homeworkout.exercise.model;
 
 import jakarta.persistence.*;
+import lombok.*;
 
 @Entity
 @Table(name = "exercises")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@ToString
 public class Exercise {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,45 +23,4 @@ public class Exercise {
     private String description;
 
     private String muscleGroup;
-
-    public Exercise() {
-    }
-
-    public Exercise(String name, String description, String muscleGroup) {
-        this.name = name;
-        this.description = description;
-        this.muscleGroup = muscleGroup;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getMuscleGroup() {
-        return muscleGroup;
-    }
-
-    public void setMuscleGroup(String muscleGroup) {
-        this.muscleGroup = muscleGroup;
-    }
 }

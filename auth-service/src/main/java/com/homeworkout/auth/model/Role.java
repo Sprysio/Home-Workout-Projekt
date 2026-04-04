@@ -1,4 +1,3 @@
-// java
 package com.homeworkout.auth.model;
 
 public enum Role {
