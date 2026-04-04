@@ -17,9 +17,12 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/plans")
 public class WorkoutController {
+
     private final WorkoutRepository repo;
     private final RestTemplate rest;
     private final JwtUtil jwtUtil;
+
+    private static final String EXERCISE_SERVICE_URL = "http://localhost:8082/exercises/";
 
     public WorkoutController(WorkoutRepository repo, RestTemplate rest, JwtUtil jwtUtil) {
         this.repo = repo;
@@ -27,109 +30,157 @@ public class WorkoutController {
         this.jwtUtil = jwtUtil;
     }
 
-    private ResponseEntity<?> requireAuth(HttpServletRequest req) {
+    private Optional<String> extractUsername(HttpServletRequest req) {
         String h = req.getHeader("Authorization");
-        if (h == null || !h.startsWith("Bearer "))
-            return ResponseEntity.status(401).body(Map.of("error", "missing_token"));
+
+        if (h == null || !h.startsWith("Bearer ")) {
+            return Optional.empty();
+        }
+
         String token = h.substring(7);
-        if (!jwtUtil.validateToken(token)) return ResponseEntity.status(401).body(Map.of("error", "invalid_token"));
+
+        if (!jwtUtil.validateToken(token)) {
+            return Optional.empty();
+        }
+
+        return Optional.of(jwtUtil.getUsernameFromToken(token));
+    }
+
+    private ResponseEntity<?> requireAuth(HttpServletRequest req) {
+        if (extractUsername(req).isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("error", "unauthorized"));
+        }
         return null;
     }
 
-    private String getUsernameFromReq(HttpServletRequest req) {
-        String token = req.getHeader("Authorization").substring(7);
-        return jwtUtil.getUsernameFromToken(token);
+    private ResponseEntity<?> authorizeAndGetPlan(HttpServletRequest req, Long planId) {
+        Optional<String> usernameOpt = extractUsername(req);
+        if (usernameOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("error", "unauthorized"));
+        }
+
+        Optional<WorkoutPlan> opt = repo.findById(planId);
+        if (opt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("error", "not_found"));
+        }
+
+        WorkoutPlan plan = opt.get();
+
+        if (!usernameOpt.get().equals(plan.getOwnerUsername())) {
+            return ResponseEntity.status(403).body(Map.of("error", "forbidden"));
+        }
+
+        return ResponseEntity.ok(plan);
     }
 
     @PostMapping
     public ResponseEntity<?> create(@RequestBody WorkoutPlan p, HttpServletRequest req) {
-        ResponseEntity<?> authErr = requireAuth(req);
-        if (authErr != null) return authErr;
-        String actor = getUsernameFromReq(req);
-        p.setOwnerUsername(actor);
+
+        Optional<String> usernameOpt = extractUsername(req);
+        if (usernameOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("error", "unauthorized"));
+        }
+
+        if (p == null || p.getName() == null) {
+            return ResponseEntity.badRequest().body(Map.of("error", "invalid_payload"));
+        }
+
+        p.setOwnerUsername(usernameOpt.get());
         p.setItems(p.getItems() == null ? List.of() : p.getItems());
+
         WorkoutPlan saved = repo.save(p);
         return ResponseEntity.ok(saved);
     }
 
     @GetMapping
     public ResponseEntity<?> listOwn(HttpServletRequest req) {
-        ResponseEntity<?> authErr = requireAuth(req);
-        if (authErr != null) return authErr;
-        String actor = getUsernameFromReq(req);
-        List<WorkoutPlan> plans = repo.findByOwnerUsername(actor);
+
+        Optional<String> usernameOpt = extractUsername(req);
+        if (usernameOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("error", "unauthorized"));
+        }
+
+        List<WorkoutPlan> plans = repo.findByOwnerUsername(usernameOpt.get());
         return ResponseEntity.ok(plans);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getOne(@PathVariable Long id, HttpServletRequest req) {
-        ResponseEntity<?> authErr = requireAuth(req);
-        if (authErr != null) return authErr;
-        String actor = getUsernameFromReq(req);
-        Optional<WorkoutPlan> opt = repo.findById(id);
-        if (opt.isEmpty()) return ResponseEntity.status(404).body(Map.of("error", "not_found"));
-        WorkoutPlan plan = opt.get();
-        if (!actor.equals(plan.getOwnerUsername()))
-            return ResponseEntity.status(403).body(Map.of("error", "forbidden"));
+
+        ResponseEntity<?> authRes = authorizeAndGetPlan(req, id);
+        if (!authRes.getStatusCode().is2xxSuccessful()) return authRes;
+        WorkoutPlan plan = (WorkoutPlan) authRes.getBody();
+
         return ResponseEntity.ok(plan);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<?> update(@PathVariable Long id, @RequestBody WorkoutPlan p, HttpServletRequest req) {
-        ResponseEntity<?> authErr = requireAuth(req);
-        if (authErr != null) return authErr;
-        String actor = getUsernameFromReq(req);
-        Optional<WorkoutPlan> opt = repo.findById(id);
-        if (opt.isEmpty()) return ResponseEntity.status(404).body(Map.of("error", "not_found"));
-        WorkoutPlan existing = opt.get();
-        if (!actor.equals(existing.getOwnerUsername()))
-            return ResponseEntity.status(403).body(Map.of("error", "forbidden"));
-        existing.setName(p.getName());
-        // nie pozwalam na zmianę ownera przez request
+    public ResponseEntity<?> update(@PathVariable Long id,
+                                    @RequestBody WorkoutPlan p,
+                                    HttpServletRequest req) {
+
+        ResponseEntity<?> authRes = authorizeAndGetPlan(req, id);
+        if (!authRes.getStatusCode().is2xxSuccessful()) return authRes;
+        WorkoutPlan existing = (WorkoutPlan) authRes.getBody();
+
+        if (p != null && p.getName() != null) {
+            existing.setName(p.getName());
+        }
+
         WorkoutPlan saved = repo.save(existing);
         return ResponseEntity.ok(saved);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> delete(@PathVariable Long id, HttpServletRequest req) {
-        ResponseEntity<?> authErr = requireAuth(req);
-        if (authErr != null) return authErr;
-        String actor = getUsernameFromReq(req);
-        Optional<WorkoutPlan> opt = repo.findById(id);
-        if (opt.isEmpty()) return ResponseEntity.status(404).body(Map.of("error", "not_found"));
-        WorkoutPlan existing = opt.get();
-        if (!actor.equals(existing.getOwnerUsername()))
-            return ResponseEntity.status(403).body(Map.of("error", "forbidden"));
+
+        ResponseEntity<?> authRes = authorizeAndGetPlan(req, id);
+        if (!authRes.getStatusCode().is2xxSuccessful()) return authRes;
+        WorkoutPlan existing = (WorkoutPlan) authRes.getBody();
+
         repo.deleteById(id);
         return ResponseEntity.ok(Map.of("deleted", id));
     }
 
     @PostMapping("/{planId}/add")
-    public ResponseEntity<?> addExercise(@PathVariable Long planId, @RequestBody WorkoutItem item, HttpServletRequest req) {
-        ResponseEntity<?> authErr = requireAuth(req);
-        if (authErr != null) return authErr;
-        String actor = getUsernameFromReq(req);
+    public ResponseEntity<?> addExercise(@PathVariable Long planId,
+                                         @RequestBody WorkoutItem item,
+                                         HttpServletRequest req) {
+
+        Optional<String> usernameOpt = extractUsername(req);
+        if (usernameOpt.isEmpty()) {
+            return ResponseEntity.status(401).body(Map.of("error", "unauthorized"));
+        }
+
         Optional<WorkoutPlan> planOpt = repo.findById(planId);
-        if (planOpt.isEmpty()) return ResponseEntity.status(404).body(Map.of("error", "plan_not_found"));
+        if (planOpt.isEmpty()) {
+            return ResponseEntity.status(404).body(Map.of("error", "plan_not_found"));
+        }
+
         WorkoutPlan plan = planOpt.get();
-        if (!actor.equals(plan.getOwnerUsername()))
+
+        if (!usernameOpt.get().equals(plan.getOwnerUsername())) {
             return ResponseEntity.status(403).body(Map.of("error", "forbidden"));
+        }
 
-        if (item.getExerciseId() == null)
+        if (item == null || item.getExerciseId() == null) {
             return ResponseEntity.badRequest().body(Map.of("error", "exercise_id_missing"));
-        if (item.getSets() == null || item.getSets() <= 0)
+        }
+        if (item.getSets() == null || item.getSets() <= 0) {
             return ResponseEntity.badRequest().body(Map.of("error", "invalid_sets"));
-        if (item.getReps() == null || item.getReps() <= 0)
+        }
+        if (item.getReps() == null || item.getReps() <= 0) {
             return ResponseEntity.badRequest().body(Map.of("error", "invalid_reps"));
+        }
 
-        String url = "http://localhost:8082/exercises/" + item.getExerciseId();
         try {
-            rest.getForObject(url, Object.class);
+            rest.getForObject(EXERCISE_SERVICE_URL + item.getExerciseId(), Object.class);
         } catch (Exception e) {
             return ResponseEntity.status(404).body(Map.of("error", "exercise_not_found"));
         }
 
         plan.getItems().add(item);
+
         WorkoutPlan saved = repo.save(plan);
         return ResponseEntity.ok(saved);
     }
