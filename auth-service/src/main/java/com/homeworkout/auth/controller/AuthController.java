@@ -48,7 +48,7 @@
                 return userRepo.findByUsername(username)
                         .map(u -> {
                             if (passwordEncoder.matches(password, u.getPassword())) {
-                                String token = jwtUtil.generateToken(u.getUsername());
+                                String token = jwtUtil.generateToken(u.getUsername(), u.getRoles());
                                 return ResponseEntity.ok(Map.of("token", token));
                             } else {
                                 return ResponseEntity.status(401).body(Map.of("error", "invalid_credentials"));

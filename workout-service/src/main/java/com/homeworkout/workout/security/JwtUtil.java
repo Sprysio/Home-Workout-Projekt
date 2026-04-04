@@ -1,15 +1,12 @@
-
-package com.homeworkout.auth.security;
+package com.homeworkout.workout.security;
 
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import com.homeworkout.auth.model.Role;
 
 import java.nio.charset.StandardCharsets;
 import java.security.Key;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,24 +16,8 @@ public class JwtUtil {
     @Value("${jwt.secret}")
     private String secret;
 
-    @Value("${jwt.expiration-ms}")
-    private long expirationMs;
-
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
-    }
-
-    public String generateToken(String username, Set<Role> roles) {
-        Date now = new Date();
-        Date exp = new Date(now.getTime() + expirationMs);
-        List<String> roleNames = roles.stream().map(Role::name).collect(Collectors.toList());
-        return Jwts.builder()
-                .setSubject(username)
-                .claim("roles", roleNames)
-                .setIssuedAt(now)
-                .setExpiration(exp)
-                .signWith(getSigningKey())
-                .compact();
     }
 
     public String getUsernameFromToken(String token) {

@@ -10,18 +10,52 @@ public class Exercise {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String name;
+
     @Column(length = 2000)
     private String description;
+
     private String muscleGroup;
 
-    // getters / setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-    public String getDescription() { return description; }
-    public void setDescription(String description) { this.description = description; }
-    public String getMuscleGroup() { return muscleGroup; }
-    public void setMuscleGroup(String muscleGroup) { this.muscleGroup = muscleGroup; }
+    public Exercise() {
+    }
+
+    public Exercise(String name, String description, String muscleGroup) {
+        this.name = name;
+        this.description = description;
+        this.muscleGroup = muscleGroup;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getMuscleGroup() {
+        return muscleGroup;
+    }
+
+    public void setMuscleGroup(String muscleGroup) {
+        this.muscleGroup = muscleGroup;
+    }
 }
