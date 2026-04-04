@@ -1,4 +1,4 @@
-# Home-Workout-Projekt# Home Workout Projekt
+# Home-Workout-Projekt
 
 1. Opis
 Projekt "Home Workout" to prosty system do zarządzania planami treningowymi i katalogiem ćwiczeń, z autoryzacją opartą na JWT. Składa się z kilku mikroserwisów, które komunikują się ze sobą::
