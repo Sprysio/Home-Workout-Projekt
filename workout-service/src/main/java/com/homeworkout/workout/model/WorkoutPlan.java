@@ -1,11 +1,14 @@
-
 package com.homeworkout.workout.model;
 
 import jakarta.persistence.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Setter
+@Getter
 @Entity
 @Table(name = "workout_plans")
 public class WorkoutPlan {
@@ -16,7 +19,6 @@ public class WorkoutPlan {
     @Column(nullable = false)
     private String name;
 
-    // właściciel planu - username z auth-service
     @Column(nullable = false)
     private String ownerUsername;
 
@@ -27,35 +29,4 @@ public class WorkoutPlan {
     public WorkoutPlan() {
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getOwnerUsername() {
-        return ownerUsername;
-    }
-
-    public void setOwnerUsername(String ownerUsername) {
-        this.ownerUsername = ownerUsername;
-    }
-
-    public List<WorkoutItem> getItems() {
-        return items;
-    }
-
-    public void setItems(List<WorkoutItem> items) {
-        this.items = items;
-    }
 }

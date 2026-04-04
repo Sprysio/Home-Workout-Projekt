@@ -1,4 +1,3 @@
-// java
 package com.homeworkout.auth.config;
 
 import org.springframework.context.annotation.Bean;

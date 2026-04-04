@@ -1,4 +1,3 @@
-// java
 package com.homeworkout.workout.config;
 
 import org.springframework.context.annotation.Bean;

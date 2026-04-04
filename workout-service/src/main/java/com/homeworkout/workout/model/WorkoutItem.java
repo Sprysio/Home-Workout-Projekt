@@ -1,4 +1,3 @@
-
 package com.homeworkout.workout.model;
 
 import jakarta.persistence.Embeddable;

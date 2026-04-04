@@ -1,4 +1,3 @@
-
 package com.homeworkout.auth.security;
 
 import io.jsonwebtoken.*;

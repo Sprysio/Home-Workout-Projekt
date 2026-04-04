@@ -1,4 +1,3 @@
-
 package com.homeworkout.auth.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;

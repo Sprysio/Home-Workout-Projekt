@@ -1,4 +1,3 @@
-// java
 package com.homeworkout.exercise.security;
 
 import io.jsonwebtoken.*;

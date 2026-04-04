@@ -1,4 +1,3 @@
-// java
 package com.homeworkout.exercise.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
