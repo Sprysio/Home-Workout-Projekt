@@ -14,22 +14,4 @@ Wymagania
 3. Docker + docker-compose 
 4. Baza danych
 
-Przykładowe endpointy
-1. `auth-service` (domyślnie `/auth`)
-   1. `POST /auth/register` - rejestracja 
-   2. `POST /auth/login` - logowanie (body: username, password) → zwraca `{ "token": "..." }`
-   3. `GET /auth/users` - lista użytkowników (ADMIN only)
-   4. `PUT /auth/users/{id}/role` - zmiana roli (ADMIN only)
-2. `exercise-service` (domyślnie `/exercises`)
-   1. `GET /exercises` - lista ćwiczeń (publiczne)
-   2. `GET /exercises/{id}` - pobierz ćwiczenie
-   3. `POST /exercises` - utwórz (ADMIN only)
-   4. `PUT /exercises/{id}` - edytuj (ADMIN only)
-   5. `DELETE /exercises/{id}` - usuń (ADMIN only)
-3. `workout-service` (domyślnie `/plans`)
-   1. `POST /plans` - utwórz plan 
-   2. `GET /plans` - pobierz wszystkie własne plany 
-   3. `GET /plans/{id}` - pobierz plan, tylko właściciel
-   4. `PUT /plans/{id}` - zaktualizuj plan, tylko właściciel
-   5. `DELETE /plans/{id}` - usuń plan, tylko właściciel
-   6. `POST /plans/{planId}/add` - dodaj ćwiczenie do planu
+Pełna dokumentacja endpointów znajduje się w pliku [ENDPOINT_DOCS.md](ENDPOINT_DOCS.md).
