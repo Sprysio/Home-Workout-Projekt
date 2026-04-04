@@ -6,6 +6,7 @@ import com.homeworkout.workout.model.WorkoutPlan;
 import com.homeworkout.workout.model.WorkoutItem;
 import com.homeworkout.workout.repository.WorkoutRepository;
 import org.springframework.web.client.RestTemplate;
+
 import java.util.List;
 
 @RestController
@@ -15,14 +16,19 @@ public class WorkoutController {
     private final RestTemplate rest;
 
     public WorkoutController(WorkoutRepository repo, RestTemplate rest) {
-        this.repo = repo; this.rest = rest;
+        this.repo = repo;
+        this.rest = rest;
     }
 
     @PostMapping
-    public WorkoutPlan create(@RequestBody WorkoutPlan p) { return repo.save(p); }
+    public WorkoutPlan create(@RequestBody WorkoutPlan p) {
+        return repo.save(p);
+    }
 
     @GetMapping("/user/{userId}")
-    public List<WorkoutPlan> getByUser(@PathVariable Long userId) { return repo.findByUserId(userId); }
+    public List<WorkoutPlan> getByUser(@PathVariable Long userId) {
+        return repo.findByUserId(userId);
+    }
 
     @PostMapping("/{planId}/add")
     public WorkoutPlan addExercise(@PathVariable Long planId, @RequestBody WorkoutItem item) {
