@@ -1,7 +1,5 @@
 package com.app.api_gateway;
 
-import com.app.gateway.util.JwtUtil;
-import lombok.RequiredArgsConstructor;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.http.HttpHeaders;

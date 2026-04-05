@@ -4,7 +4,7 @@ services:
   frontend:
     image: sprysio/homew-frontend:latest
     ports:
-      - "3000:80"
+      - "80:80"
     depends_on:
       - api-gateway
     networks:
@@ -32,7 +32,7 @@ services:
       - EXERCISE_SERVICE_HOST=exercise-service
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - JWT_SECRET=${JWT_SECRET}
+      - JWT_SECRET_BASE64=${JWT_SECRET_BASE64}
       - CORS_ALLOWED_ORIGINS=http://localhost:3000
     networks:
       - public
@@ -44,7 +44,7 @@ services:
     depends_on:
       - postgres
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -66,7 +66,7 @@ services:
     depends_on:
       - postgres
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
@@ -79,6 +79,7 @@ services:
       - DB_USER=appuser
       - DB_PASSWORD=secret
       - JWT_SECRET=${JWT_SECRET}
+      - EXERCISE_SERVICE_URL=http://exercise-service:8080/api/exercises/
     networks:
       - services
       - data
@@ -87,7 +88,7 @@ services:
     depends_on:
       - postgres
     healthcheck:
-      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/actuator/health || exit 1"]
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/actuator/health || exit 1"]
       interval: 10s
       timeout: 5s
       retries: 3
