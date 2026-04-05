@@ -1,4 +1,4 @@
-package com.app.gateway.util;
+package com.app.api_gateway;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;

@@ -1,4 +1,4 @@
-package com.app.gateway.filter;
+package com.app.api_gateway;
 
 import com.app.gateway.util.JwtUtil;
 import lombok.RequiredArgsConstructor;

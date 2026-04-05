@@ -33,7 +33,7 @@ spring:
             - id: workout-service
               uri: http://${WORKOUT_SERVICE_HOST}:8080
               predicates:
-                - Path=/api/workout/**
+                - Path=/api/plans/**
               filters:
                 - Auth                    # JWT verification
                 - name: RequestRateLimiter
@@ -46,7 +46,7 @@ spring:
             - id: exercise-public-list
               uri: http://${EXERCISE_SERVICE_HOST}:8080
               predicates:
-                - Path=/api/exercise/exercises
+                - Path=/api/exercises
                 - Method=GET
               filters:
                 - name: RequestRateLimiter
@@ -58,7 +58,7 @@ spring:
             - id: exercise-public-one
               uri: http://${EXERCISE_SERVICE_HOST}:8080
               predicates:
-                - Path=/api/exercise/exercises/*
+                - Path=/api/exercises/*
                 - Method=GET
               filters:
                 - name: RequestRateLimiter
@@ -70,7 +70,7 @@ spring:
             - id: exercise-service
               uri: http://${EXERCISE_SERVICE_HOST}:8080
               predicates:
-                - Path=/api/exercise/**
+                - Path=/api/exercises/**
               filters:
                 - Auth                    # JWT verification
                 - name: RequestRateLimiter

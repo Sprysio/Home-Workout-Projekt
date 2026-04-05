@@ -5,7 +5,6 @@ import org.springframework.web.bind.annotation.*;
 import com.homeworkout.workout.model.WorkoutPlan;
 import com.homeworkout.workout.model.WorkoutItem;
 import com.homeworkout.workout.repository.WorkoutRepository;
-import org.springframework.web.client.RestTemplate;
 import com.homeworkout.workout.security.JwtUtil;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,14 +18,10 @@ import java.util.Optional;
 public class WorkoutController {
 
     private final WorkoutRepository repo;
-    private final RestTemplate rest;
     private final JwtUtil jwtUtil;
 
-    private static final String EXERCISE_SERVICE_URL = "http://localhost:8082/exercises/";
-
-    public WorkoutController(WorkoutRepository repo, RestTemplate rest, JwtUtil jwtUtil) {
+    public WorkoutController(WorkoutRepository repo, JwtUtil jwtUtil) {
         this.repo = repo;
-        this.rest = rest;
         this.jwtUtil = jwtUtil;
     }
 
@@ -173,10 +168,8 @@ public class WorkoutController {
             return ResponseEntity.badRequest().body(Map.of("error", "invalid_reps"));
         }
 
-        try {
-            rest.getForObject(EXERCISE_SERVICE_URL + item.getExerciseId(), Object.class);
-        } catch (Exception e) {
-            return ResponseEntity.status(404).body(Map.of("error", "exercise_not_found"));
+        if (item.getExerciseId() <= 0) {
+            return ResponseEntity.badRequest().body(Map.of("error", "invalid_exercise_id"));
         }
 
         plan.getItems().add(item);
