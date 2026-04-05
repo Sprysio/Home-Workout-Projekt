@@ -68,6 +68,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -86,7 +89,7 @@ jobs:
         with:
           context: ./${{ matrix.service }}
           push: true
-          # Tag with both the git SHA (immutable) and latest
+          platforms: linux/amd64,linux/arm64
           tags: |
             ${{ env.DOCKER_USERNAME }}/${{ matrix.image }}:${{ steps.sha.outputs.short }}
             ${{ env.DOCKER_USERNAME }}/${{ matrix.image }}:latest
