@@ -9,9 +9,6 @@ Projekt "Home Workout" to prosty system do zarządzania planami treningowymi i k
    5. `frontend` - prosta aplikacja React.
 
 Wymagania
-1. Java 17+
-2. Maven
-3. Docker + docker-compose 
-4. Baza danych
+1. Docker + docker-compose
 
 Pełna dokumentacja endpointów znajduje się w pliku [ENDPOINT_DOCS.md](ENDPOINT_DOCS.md).

@@ -4,8 +4,8 @@ spring:
 
   data:
     redis:
-      host: ${REDIS_HOST:localhost}
-      port: ${REDIS_PORT:6379}
+      host: ${REDIS_HOST}
+      port: ${REDIS_PORT}
 
   cloud:
     gateway:
@@ -19,7 +19,7 @@ spring:
             # ── AUTH SERVICE ───────────────────────────────────────────────────
             # Public: login & register — no JWT required
             - id: auth-public
-              uri: http://${AUTH_SERVICE_HOST:auth-service}:8080
+              uri: http://${AUTH_SERVICE_HOST}:8080
               predicates:
                 - Path=/api/auth/**
               filters:
@@ -31,9 +31,9 @@ spring:
 
             # ── WORKOUT SERVICE ────────────────────────────────────────────────
             - id: workout-service
-              uri: http://${WORKOUT_SERVICE_HOST:workout-service}:8080
+              uri: http://${WORKOUT_SERVICE_HOST}:8080
               predicates:
-                - Path=/api/workout/**
+                - Path=/api/plans/**
               filters:
                 - Auth                    # JWT verification
                 - name: RequestRateLimiter
@@ -43,10 +43,34 @@ spring:
                     key-resolver: "#{@userKeyResolver}"
 
             # ── EXERCISE SERVICE ───────────────────────────────────────────────
-            - id: exercise-service
-              uri: http://${EXERCISE_SERVICE_HOST:exercise-service}:8080
+            - id: exercise-public-list
+              uri: http://${EXERCISE_SERVICE_HOST}:8080
               predicates:
-                - Path=/api/exercise/**
+                - Path=/api/exercises
+                - Method=GET
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 20
+                    redis-rate-limiter.burstCapacity: 40
+                    key-resolver: "#{@userKeyResolver}"
+
+            - id: exercise-public-one
+              uri: http://${EXERCISE_SERVICE_HOST}:8080
+              predicates:
+                - Path=/api/exercises/*
+                - Method=GET
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 20
+                    redis-rate-limiter.burstCapacity: 40
+                    key-resolver: "#{@userKeyResolver}"
+
+            - id: exercise-service
+              uri: http://${EXERCISE_SERVICE_HOST}:8080
+              predicates:
+                - Path=/api/exercises/**
               filters:
                 - Auth                    # JWT verification
                 - name: RequestRateLimiter
@@ -55,9 +79,11 @@ spring:
                     redis-rate-limiter.burstCapacity: 40
                     key-resolver: "#{@userKeyResolver}"
 
-# JWT secret — use a Base64-encoded 256-bit key in production
 jwt:
-  secret: ${JWT_SECRET:bXlTdXBlclNlY3JldEtleVRoYXRJc0F0TGVhc3QzMkNoYXJhY3RlcnNMb25n}
+  secret: ${JWT_SECRET_BASE64}
+
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS}
 
 # Actuator
 management:
@@ -73,7 +99,6 @@ server:
   port: 8080
 
 ---
-# Docker profile — hostnames match docker-compose service names
 spring:
   config:
     activate:

@@ -4,7 +4,7 @@ services:
   frontend:
     image: sprysio/homew-frontend:latest
     ports:
-      - "3000:80"
+      - "80:80"
     depends_on:
       - api-gateway
     networks:
@@ -19,9 +19,21 @@ services:
       - workout-service
       - exercise-service
       - redis
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-      - JWT_SECRET=${JWT_SECRET}
+      - AUTH_SERVICE_HOST=auth-service
+      - WORKOUT_SERVICE_HOST=workout-service
+      - EXERCISE_SERVICE_HOST=exercise-service
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - JWT_SECRET_BASE64=${JWT_SECRET_BASE64}
+      - CORS_ALLOWED_ORIGINS=http://localhost:3000
     networks:
       - public
       - services
@@ -31,10 +43,19 @@ services:
     image: sprysio/homew-auth:latest
     depends_on:
       - postgres
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - DB_HOST=postgres
       - DB_PORT=5432
+      - DB_NAME=appdb
+      - DB_USER=appuser
+      - DB_PASSWORD=secret
       - JWT_SECRET=${JWT_SECRET}
     networks:
       - services
@@ -44,29 +65,54 @@ services:
     image: sprysio/homew-workout:latest
     depends_on:
       - postgres
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - DB_HOST=postgres
       - DB_PORT=5432
+      - DB_NAME=appdb
+      - DB_USER=appuser
+      - DB_PASSWORD=secret
+      - JWT_SECRET=${JWT_SECRET}
+      - EXERCISE_SERVICE_URL=http://exercise-service:8080/api/exercises/
     networks:
       - services
       - data
-
   exercise-service:
     image: sprysio/homew-exercise:latest
     depends_on:
       - postgres
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://localhost:8080/api/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - DB_HOST=postgres
       - DB_PORT=5432
+      - DB_NAME=appdb
+      - DB_USER=appuser
+      - DB_PASSWORD=secret
+      - JWT_SECRET=${JWT_SECRET}
     networks:
       - services
       - data
-
   postgres:
     image: postgres:15
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U appuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
     environment:
       POSTGRES_USER: appuser
       POSTGRES_PASSWORD: secret
@@ -80,6 +126,11 @@ services:
   redis:
     image: redis:7-alpine
     restart: always
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     networks:
       - cache
 

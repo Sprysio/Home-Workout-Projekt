@@ -1,12 +1,15 @@
 package com.homeworkout.workout.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.homeworkout.workout.model.WorkoutPlan;
 import com.homeworkout.workout.model.WorkoutItem;
 import com.homeworkout.workout.repository.WorkoutRepository;
-import org.springframework.web.client.RestTemplate;
 import com.homeworkout.workout.security.JwtUtil;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestClientException;
+import org.springframework.web.client.RestTemplate;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -19,15 +22,18 @@ import java.util.Optional;
 public class WorkoutController {
 
     private final WorkoutRepository repo;
-    private final RestTemplate rest;
     private final JwtUtil jwtUtil;
+    private final RestTemplate restTemplate;
+    private final String exerciseServiceUrl;
 
-    private static final String EXERCISE_SERVICE_URL = "http://localhost:8082/exercises/";
-
-    public WorkoutController(WorkoutRepository repo, RestTemplate rest, JwtUtil jwtUtil) {
+    public WorkoutController(WorkoutRepository repo,
+                             JwtUtil jwtUtil,
+                             RestTemplate restTemplate,
+                             @Value("${exercise.service.url}") String exerciseServiceUrl) {
         this.repo = repo;
-        this.rest = rest;
         this.jwtUtil = jwtUtil;
+        this.restTemplate = restTemplate;
+        this.exerciseServiceUrl = exerciseServiceUrl;
     }
 
     private Optional<String> extractUsername(HttpServletRequest req) {
@@ -174,9 +180,11 @@ public class WorkoutController {
         }
 
         try {
-            rest.getForObject(EXERCISE_SERVICE_URL + item.getExerciseId(), Object.class);
-        } catch (Exception e) {
+            restTemplate.getForObject(exerciseServiceUrl + item.getExerciseId(), Object.class);
+        } catch (HttpClientErrorException.NotFound e) {
             return ResponseEntity.status(404).body(Map.of("error", "exercise_not_found"));
+        } catch (RestClientException e) {
+            return ResponseEntity.status(503).body(Map.of("error", "exercise_service_unavailable"));
         }
 
         plan.getItems().add(item);
