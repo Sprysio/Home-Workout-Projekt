@@ -17,7 +17,6 @@ spring:
 
           routes:
             # ── AUTH SERVICE ───────────────────────────────────────────────────
-            # Public: login & register — no JWT required
             - id: auth-public
               uri: http://${AUTH_SERVICE_HOST}:8080
               predicates:
