@@ -17,11 +17,36 @@ spring:
 
           routes:
             # ── AUTH SERVICE ───────────────────────────────────────────────────
-            - id: auth-public
+            - id: auth-public-login
+              uri: http://${AUTH_SERVICE_HOST}:8080
+              predicates:
+                - Path=/api/auth/login
+                - Method=POST
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 20
+                    key-resolver: "#{@userKeyResolver}"
+
+            - id: auth-public-register
+              uri: http://${AUTH_SERVICE_HOST}:8080
+              predicates:
+                - Path=/api/auth/register
+                - Method=POST
+              filters:
+                - name: RequestRateLimiter
+                  args:
+                    redis-rate-limiter.replenishRate: 10
+                    redis-rate-limiter.burstCapacity: 20
+                    key-resolver: "#{@userKeyResolver}"
+
+            - id: auth-service
               uri: http://${AUTH_SERVICE_HOST}:8080
               predicates:
                 - Path=/api/auth/**
               filters:
+                - Auth                    # JWT verification
                 - name: RequestRateLimiter
                   args:
                     redis-rate-limiter.replenishRate: 10
