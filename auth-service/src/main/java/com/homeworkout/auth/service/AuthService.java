@@ -7,6 +7,7 @@ import com.homeworkout.auth.repository.UserRepository;
 import com.homeworkout.auth.model.User;
 import com.homeworkout.auth.model.Role;
 
+import java.util.HashSet;
 import java.util.Optional;
 
 @Service
@@ -21,7 +22,10 @@ public class AuthService {
 
     public User register(User u) {
         u.setPassword(encoder.encode(u.getPassword()));
-        if (u.getRoles() == null || u.getRoles().isEmpty()) {
+        if (u.getRoles() == null) {
+            u.setRoles(new HashSet<>());
+        }
+        if (u.getRoles().isEmpty()) {
             u.getRoles().add(Role.ROLE_USER);
         }
         return repo.save(u);
