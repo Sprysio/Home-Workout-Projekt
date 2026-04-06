@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS users
 (
     id         BIGSERIAL PRIMARY KEY,
     username   VARCHAR(50)  NOT NULL UNIQUE,
+    email      VARCHAR(255) NOT NULL UNIQUE,
     password   VARCHAR(255) NOT NULL,
     roles      VARCHAR(255) NOT NULL DEFAULT 'ROLE_USER',
     created_at TIMESTAMPTZ  NOT NULL DEFAULT NOW()
@@ -45,9 +46,9 @@ CREATE INDEX IF NOT EXISTS idx_workout_items_exercise_id ON workout_items (exerc
 CREATE INDEX IF NOT EXISTS idx_exercises_muscle_group ON exercises (muscle_group);
 
 -- SAMPLE DATA
-INSERT INTO users (username, password, roles) VALUES
-    ('john_doe', '$2a$12$placeholder_bcrypt_hash_1', 'ROLE_USER'),
-    ('admin',    '$2a$12$placeholder_bcrypt_hash_2', 'ROLE_ADMIN');
+INSERT INTO users (username, email, password, roles) VALUES
+    ('john_doe', 'john_doe@example.com', '$2a$12$placeholder_bcrypt_hash_1', 'ROLE_USER'),
+    ('admin',    'admin@example.com',    '$2a$12$placeholder_bcrypt_hash_2', 'ROLE_ADMIN');
 
 INSERT INTO exercises (name, description, muscle_group) VALUES
     ('Bench Press',    'Barbell bench press description', 'CHEST'),
