@@ -70,8 +70,6 @@ public class AuthController {
             return ResponseEntity.badRequest().body(Map.of("error", "username_or_email_taken"));
         }
 
-        user.setPassword(passwordEncoder.encode(user.getPassword()));
-
         User saved = authService.register(user);
 
         return ResponseEntity.ok(Map.of(
