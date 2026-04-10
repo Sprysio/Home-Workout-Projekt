@@ -1,5 +1,37 @@
+# Version control
 .git
+.gitignore
+.gitattributes
+
+# Build artifacts
 target/
-*.md
+*.jar
+*.class
+
+# IDE
 .idea/
 *.iml
+*.iws
+*.ipr
+.eclipse
+.classpath
+.project
+.settings/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Documentation
+*.md
+README.md
+
+# CI/CD
+.github/
+.gitlab-ci.yml
+.travis.yml
+
+# Other
+node_modules/
+.env
+.env.local

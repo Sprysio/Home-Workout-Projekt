@@ -1,5 +1,14 @@
 # Dokumentacja endpointów — Home Workout Projekt
 
+## Ważne: globalny prefiks `/api`
+
+Wszystkie endpointy w tym dokumencie są dostępne przez API Gateway z prefiksem `/api`.
+
+Przykłady:
+- `/auth/login` w praktyce: `/api/auth/login`
+- `/exercises` w praktyce: `/api/exercises`
+- `/plans/{id}` w praktyce: `/api/plans/{id}`
+
 Uwaga: wszystkie endpointy chronione wymagają nagłówka Authorization: `Bearer <token>` — token otrzymany z `POST /auth/login`.
 
 Format dokumentacji dla każdego endpointu:

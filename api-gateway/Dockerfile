@@ -13,7 +13,7 @@ RUN mvn package -DskipTests -q && \
 FROM eclipse-temurin:25-jre-alpine-3.23@sha256:f10d6259d0798c1e12179b6bf3b63cea0d6843f7b09c9f9c9c422c50e44379ec
 LABEL maintainer="app-team" \
       version="1.0.0" \
-      description="Auth Service - JWT authentication and user management"
+      description="API Gateway Service - Spring Cloud Gateway with JWT auth and rate limiting"
 WORKDIR /app
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser

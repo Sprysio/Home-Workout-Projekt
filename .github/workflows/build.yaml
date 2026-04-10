@@ -4,6 +4,10 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+  security-events: write
+
 env:
   REGISTRY: docker.io
   DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
@@ -90,9 +94,59 @@ jobs:
           context: ./${{ matrix.service }}
           push: true
           platforms: linux/amd64,linux/arm64
+          sbom: true
+          provenance: mode=max
           tags: |
             ${{ env.DOCKER_USERNAME }}/${{ matrix.image }}:${{ steps.sha.outputs.short }}
             ${{ env.DOCKER_USERNAME }}/${{ matrix.image }}:latest
           cache-from: type=gha,scope=${{ matrix.service }}
           cache-to:   type=gha,scope=${{ matrix.service }},mode=max
+
+  # ─────────────────────────────────────────────────────────────────────────────
+  # JOB 3 — Scan pushed images with Trivy and upload reports as artifacts
+  # ─────────────────────────────────────────────────────────────────────────────
+  scan:
+    needs: [detect-changes, build]
+    if: needs.detect-changes.outputs.any_changed == 'true'
+    runs-on: ubuntu-latest
+    strategy:
+      matrix: ${{ fromJson(needs.detect-changes.outputs.matrix) }}
+      fail-fast: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract short SHA
+        id: sha
+        run: echo "short=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Scan ${{ matrix.service }} image with Trivy
+        id: trivy
+        continue-on-error: true
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.DOCKER_USERNAME }}/${{ matrix.image }}:${{ steps.sha.outputs.short }}
+          format: sarif
+          output: trivy-${{ matrix.service }}.sarif
+          severity: HIGH,CRITICAL
+          ignore-unfixed: false
+          exit-code: 1
+
+      - name: Upload Trivy report for ${{ matrix.service }}
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-report-${{ matrix.service }}
+          path: trivy-${{ matrix.service }}.sarif
+          retention-days: 14
+
+      - name: Upload Trivy report to Security tab for ${{ matrix.service }}
+        if: always()
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-${{ matrix.service }}.sarif
+
+      - name: Fail if vulnerabilities were found
+        if: steps.trivy.outcome == 'failure'
+        run: exit 1
 
