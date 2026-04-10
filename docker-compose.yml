@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.9'
 
 services:
   frontend:
@@ -11,6 +11,14 @@ services:
       - api-gateway
     networks:
       - public
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
 
   api-gateway:
     image: sprysio/homew-gateway:latest
@@ -34,12 +42,20 @@ services:
       - EXERCISE_SERVICE_HOST=exercise-service
       - REDIS_HOST=redis
       - REDIS_PORT=6379
-      - JWT_SECRET_BASE64=${JWT_SECRET_BASE64}
+      - JWT_SECRET_BASE64=${JWT_SECRET_BASE64:?Missing JWT_SECRET_BASE64. Run ./scripts/init-env.sh}
       - CORS_ALLOWED_ORIGINS=http://localhost:80
     networks:
       - public
       - services
       - cache
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 256M
 
   auth-service:
     image: sprysio/homew-auth:latest
@@ -58,10 +74,18 @@ services:
       - DB_NAME=appdb
       - DB_USER=appuser
       - DB_PASSWORD=secret
-      - JWT_SECRET=${JWT_SECRET}
+      - JWT_SECRET=${JWT_SECRET:?Missing JWT_SECRET. Run ./scripts/init-env.sh}
     networks:
       - services
       - data
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 256M
 
   workout-service:
     image: sprysio/homew-workout:latest
@@ -80,11 +104,19 @@ services:
       - DB_NAME=appdb
       - DB_USER=appuser
       - DB_PASSWORD=secret
-      - JWT_SECRET=${JWT_SECRET}
+      - JWT_SECRET=${JWT_SECRET:?Missing JWT_SECRET. Run ./scripts/init-env.sh}
       - EXERCISE_SERVICE_URL=http://exercise-service:8080/api/exercises/
     networks:
       - services
       - data
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 256M
   exercise-service:
     image: sprysio/homew-exercise:latest
     depends_on:
@@ -102,10 +134,18 @@ services:
       - DB_NAME=appdb
       - DB_USER=appuser
       - DB_PASSWORD=secret
-      - JWT_SECRET=${JWT_SECRET}
+      - JWT_SECRET=${JWT_SECRET:?Missing JWT_SECRET. Run ./scripts/init-env.sh}
     networks:
       - services
       - data
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 256M
   postgres:
     image: postgres:15
     restart: always
@@ -124,6 +164,14 @@ services:
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
     networks:
       - data
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 1G
+        reservations:
+          cpus: "1.0"
+          memory: 512M
 
   redis:
     image: redis:7-alpine
@@ -135,6 +183,14 @@ services:
       retries: 3
     networks:
       - cache
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 256M
+        reservations:
+          cpus: "0.25"
+          memory: 128M
 
 volumes:
   postgres_data:

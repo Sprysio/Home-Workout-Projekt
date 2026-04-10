@@ -1,12 +1,19 @@
-FROM maven:3.9.14-eclipse-temurin-25-alpine AS builder
+# syntax=docker/dockerfile:1
+
+# Build stage with Maven
+FROM maven:3.9.14-eclipse-temurin-25-alpine@sha256:ce377824c0dccc129e5595e13468b74a3993e0a4d8db45335c6fe654387b07e7 AS builder
 WORKDIR /app
 COPY pom.xml .
 RUN mvn dependency:go-offline -q
 COPY src/ src/
-RUN mvn package -DskipTests -q
-RUN java -Djarmode=tools -jar target/*-SNAPSHOT.jar extract --layers --launcher --destination extracted
+RUN mvn package -DskipTests -q && \
+    java -Djarmode=tools -jar target/*-SNAPSHOT.jar extract --layers --launcher --destination extracted
 
-FROM eclipse-temurin:25-jre-alpine-3.23
+# Runtime stage with minimal JRE
+FROM eclipse-temurin:25-jre-alpine-3.23@sha256:f10d6259d0798c1e12179b6bf3b63cea0d6843f7b09c9f9c9c422c50e44379ec
+LABEL maintainer="app-team" \
+      version="1.0.0" \
+      description="Exercise Service - Exercise library and management"
 WORKDIR /app
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
 USER appuser
