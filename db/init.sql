@@ -51,70 +51,97 @@ CREATE INDEX IF NOT EXISTS idx_exercises_muscle_group ON exercises (muscle_group
 --     ('admin',    'admin@example.com',    '$2a$12$placeholder_bcrypt_hash_2', 'ROLE_ADMIN');
 
 INSERT INTO exercises (name, description, muscle_group) VALUES
-    -- CHEST
-    ('Bench Press',          'The classic compound chest exercise. Lie on a flat bench, lower a barbell to your chest, then press it back up. Targets the pectoralis major, anterior deltoids, and triceps.', 'CHEST'),
-    ('Incline Bench Press',  'Performed on a bench set to 30-45 degrees. Emphasizes the upper chest and anterior deltoids more than the flat variation.', 'CHEST'),
-    ('Decline Bench Press',  'Performed on a downward-angled bench. Shifts emphasis to the lower pectoralis major. Often allows heavier loads than flat bench.', 'CHEST'),
-    ('Dumbbell Fly',         'Lie flat and arc dumbbells out to the sides and back together. Isolates the chest through a wide range of motion with minimal tricep involvement.', 'CHEST'),
-    ('Cable Crossover',      'Using a cable machine, bring handles together in front of your chest. Keeps constant tension throughout the movement unlike free weights.', 'CHEST'),
-    ('Push Up',              'Bodyweight staple. Targets chest, shoulders, and triceps. Easily scalable by elevating feet for upper chest or hands for lower chest emphasis.', 'CHEST'),
-    ('Dip',                  'Lower yourself between parallel bars until shoulders are below elbows, then press back up. Heavily targets lower chest and triceps.', 'CHEST'),
 
-    -- BACK
-    ('Pull Up',              'Hang from a bar with an overhand grip and pull yourself up until your chin clears the bar. One of the best compound movements for the back, targeting lats, rhomboids, and biceps.', 'BACK'),
-    ('Chin Up',              'Similar to a pull up but with an underhand grip. Increases bicep involvement and is generally easier for beginners.', 'BACK'),
-    ('Barbell Row',          'Hinge at the hips and row a barbell to your lower chest. A foundational compound movement for overall back thickness targeting the lats, rhomboids, and traps.', 'BACK'),
-    ('Dumbbell Row',         'Single-arm row with a dumbbell supported on a bench. Allows greater range of motion than barbell rows and helps correct side-to-side imbalances.', 'BACK'),
-    ('Seated Cable Row',     'Sit at a cable machine and row the handle to your abdomen. Great for targeting the mid-back and maintaining constant tension throughout.', 'BACK'),
-    ('Lat Pulldown',         'Pull a bar down to your upper chest on a cable machine. An accessible alternative to pull ups that effectively targets the latissimus dorsi.', 'BACK'),
-    ('Deadlift',             'The king of posterior chain exercises. Lift a loaded barbell from the floor to hip level. Works the entire back, glutes, hamstrings, and traps heavily.', 'BACK'),
-    ('Face Pull',            'Pull a rope attachment toward your face at eye level. Excellent for rear deltoids and external rotators, crucial for shoulder health and posture.', 'BACK'),
+-- CHEST
+('Pompki klasyczne', 'Ustaw dłonie na szerokość barków, ciało w linii prostej. Opuszczaj klatkę w dół kontrolowanym ruchem aż do prawie dotknięcia podłoża. Łokcie prowadź pod kątem ok. 45°. Wypychaj ciało w górę z wydechem, nie zapadaj się w biodrach.', 'CHEST'),
 
-    -- SHOULDERS
-    ('Overhead Press',       'Press a barbell from shoulder height overhead to full arm extension. The primary compound movement for shoulder development targeting all three deltoid heads.', 'SHOULDERS'),
-    ('Dumbbell Shoulder Press', 'Same movement pattern as the barbell overhead press but with dumbbells. Allows greater range of motion and corrects muscular imbalances.', 'SHOULDERS'),
-    ('Lateral Raise',        'Raise dumbbells out to the sides to shoulder height. Isolates the medial deltoid, critical for shoulder width and the V-taper appearance.', 'SHOULDERS'),
-    ('Front Raise',          'Raise dumbbells or a plate directly in front of you to shoulder height. Isolates the anterior deltoid.', 'SHOULDERS'),
-    ('Arnold Press',         'Start with palms facing you and rotate outward as you press overhead. Named after Arnold Schwarzenegger, it hits all three deltoid heads through the rotational movement.', 'SHOULDERS'),
-    ('Upright Row',          'Pull a barbell or dumbbells vertically up along your body to chin height. Targets the traps and medial deltoids. Use a wider grip to reduce shoulder impingement risk.', 'SHOULDERS'),
+('Pompki diamentowe', 'Dłonie ustaw blisko siebie pod klatką, tworząc kształt diamentu. Trzymaj łokcie blisko ciała podczas opuszczania. Schodź powoli, utrzymując napięcie brzucha. W górze prostuj ręce bez blokowania łokci.', 'CHEST'),
 
-    -- LEGS
-    ('Squat',                'The foundational lower body movement. Bar on upper back, descend until thighs are parallel to the floor, drive back up. Targets quads, glutes, and hamstrings.', 'LEGS'),
-    ('Front Squat',          'Barbell held in front at shoulder height. Shifts emphasis to the quads and requires greater core strength and ankle mobility than back squats.', 'LEGS'),
-    ('Romanian Deadlift',    'Hip hinge movement with a slight knee bend, lowering the bar along your legs until you feel a hamstring stretch. Primary exercise for hamstring and glute development.', 'LEGS'),
-    ('Leg Press',            'Push a weighted sled away from you on a 45-degree machine. Allows heavy quad loading with less spinal compression than squats.', 'LEGS'),
-    ('Leg Curl',             'Lying or seated, curl a pad toward your glutes against resistance. Isolates the hamstrings through knee flexion.', 'LEGS'),
-    ('Leg Extension',        'Seated, extend your legs against a pad to full lockout. Isolates the quadriceps through knee extension.', 'LEGS'),
-    ('Bulgarian Split Squat','Rear foot elevated on a bench, lower your back knee toward the floor. Excellent unilateral quad and glute developer that also improves balance and hip mobility.', 'LEGS'),
-    ('Calf Raise',           'Rise up onto the balls of your feet against resistance. Targets the gastrocnemius and soleus. Can be performed standing or seated.', 'LEGS'),
-    ('Hip Thrust',           'Upper back on a bench, drive hips upward against a barbell. The most effective exercise for glute isolation and hypertrophy.', 'LEGS'),
-    ('Walking Lunge',        'Step forward into a lunge position alternating legs across a distance. Targets quads, glutes, and hamstrings while adding a balance and coordination challenge.', 'LEGS'),
+('Pompki z nogami na podwyższeniu', 'Stopy oprzyj na podwyższeniu (np. krześle), dłonie na podłodze. Utrzymuj napięty brzuch i proste ciało. Schodź w dół kontrolując ruch, nacisk przenosi się bardziej na górną część klatki.', 'CHEST'),
 
-    -- ARMS
-    ('Barbell Curl',         'Curl a barbell from hip height to your shoulders. The classic bicep builder targeting the biceps brachii and brachialis.', 'ARMS'),
-    ('Dumbbell Curl',        'Alternating or simultaneous dumbbell curls. Allows supination through the movement for full bicep contraction.', 'ARMS'),
-    ('Hammer Curl',          'Curl dumbbells with a neutral grip (palms facing each other). Targets the brachialis and brachioradialis more than standard curls, adding arm thickness.', 'ARMS'),
-    ('Preacher Curl',        'Curl performed with upper arms resting on a preacher bench pad. Eliminates momentum and places peak tension on the lower bicep.', 'ARMS'),
-    ('Tricep Pushdown',      'Push a cable attachment downward to full elbow extension. Isolates the triceps, particularly the lateral head.', 'ARMS'),
-    ('Skull Crusher',        'Lower a barbell or EZ bar to your forehead while lying on a bench, then extend. Excellent for the long head of the triceps.', 'ARMS'),
-    ('Close Grip Bench Press','Bench press with hands shoulder-width apart. Shifts emphasis from chest to triceps while still being a compound movement.', 'ARMS'),
-    ('Overhead Tricep Extension', 'Extend a dumbbell or cable overhead with both hands. Stretches and works the long head of the tricep through its full range of motion.', 'ARMS'),
+('Pompki szerokie', 'Dłonie ustaw szerzej niż barki. Opuszczaj ciało, prowadząc łokcie bardziej na boki. Skup się na pracy klatki piersiowej, a nie na szybkości ruchu.', 'CHEST'),
 
-    -- CORE
-    ('Plank',                'Hold a push-up position with forearms on the ground. Builds isometric core strength and stability in the transverse abdominis and entire midsection.', 'CORE'),
-    ('Crunch',               'Lie on your back and flex your spine to lift your shoulders off the floor. Classic abdominal isolation exercise targeting the rectus abdominis.', 'CORE'),
-    ('Leg Raise',            'Lying flat, raise straight legs to 90 degrees. Heavily targets the lower rectus abdominis and hip flexors.', 'CORE'),
-    ('Russian Twist',        'Seated with feet elevated, rotate a weight side to side. Targets the obliques and rotational core strength.', 'CORE'),
-    ('Ab Wheel Rollout',     'Kneel and roll a wheel forward until nearly flat, then pull back. One of the most challenging and effective core stability exercises.', 'CORE'),
-    ('Cable Crunch',         'Kneel at a cable machine and crunch down against resistance. Allows progressive overload on the abs unlike bodyweight crunches.', 'CORE'),
-    ('Hanging Knee Raise',   'Hang from a bar and raise your knees to your chest. Targets the lower abs and hip flexors while also challenging grip strength.', 'CORE'),
+('Pompki z pauzą', 'W dolnej fazie zatrzymaj się na 1–2 sekundy tuż nad podłogą. Utrzymuj napięcie całego ciała. Następnie dynamicznie wypchnij się w górę.', 'CHEST'),
 
-    -- CARDIO
-    ('Treadmill Run',        'Sustained running on a treadmill. Improves cardiovascular endurance, burns calories, and can be programmed for steady-state or interval training.', 'CARDIO'),
-    ('Rowing Machine',       'Full body cardio on an ergometer. Engages legs, back, and arms simultaneously making it one of the most efficient cardio tools available.', 'CARDIO'),
-    ('Cycling',              'Low-impact cardio on a stationary or road bike. Excellent for cardiovascular health with minimal joint stress, particularly good for recovery days.', 'CARDIO'),
-    ('Jump Rope',            'High intensity cardio using a skipping rope. Improves coordination, footwork, and cardiovascular fitness. Burns significant calories in short sessions.', 'CARDIO'),
-    ('Battle Ropes',         'Slam heavy ropes in alternating or simultaneous waves. Combines cardiovascular conditioning with upper body muscular endurance.', 'CARDIO');
+('Pompki na jednej ręce (asystowane)', 'Jedna ręka pracuje, druga lekko wspiera. Utrzymuj szeroką pozycję nóg dla stabilizacji. Schodź powoli, kontrolując rotację tułowia.', 'CHEST'),
+
+-- BACK
+('Superman', 'Leżąc na brzuchu unieś jednocześnie ręce i nogi. Napnij dolne plecy i pośladki. Przytrzymaj 1–2 sekundy i powoli opuść. Nie zadzieraj głowy do góry.', 'BACK'),
+
+('Wiosłowanie z gumą', 'Usiądź lub stań stabilnie, chwyć gumę. Przyciągaj łokcie do tyłu blisko ciała, ściągając łopatki. Kontroluj powrót.', 'BACK'),
+
+('Mostek biodrowy', 'Leżąc na plecach ugnij nogi. Wypchnij biodra w górę, napinając pośladki i dolne plecy. Nie wyginaj nadmiernie kręgosłupa.', 'BACK'),
+
+('Ściąganie gumy do klatki', 'Przymocuj gumę wysoko. Ściągaj ją do klatki, prowadząc łokcie w dół. Skup się na pracy pleców, nie rąk.', 'BACK'),
+
+('Reverse snow angels', 'Leżąc na brzuchu przesuwaj ręce po łuku od nad głowy do bioder. Utrzymuj ręce nad podłożem przez cały czas.', 'BACK'),
+
+('Podciąganie australijskie', 'Chwyć stabilny drążek/stół. Ciało w linii prostej. Przyciągaj klatkę do drążka, ściągając łopatki.', 'BACK'),
+
+-- SHOULDERS
+('Pike push-ups', 'Ustaw ciało w literę V. Schodź głową w kierunku podłogi między dłonie. Wypychaj się w górę, angażując barki.', 'SHOULDERS'),
+
+('Krążenia ramion', 'Wykonuj powolne, kontrolowane krążenia ramion. Nie szarp ruchem, utrzymuj napięcie mięśni.', 'SHOULDERS'),
+
+('Unoszenie ramion z gumą', 'Stań na gumie, unoś ramiona do poziomu barków. Kontroluj ruch w dół.', 'SHOULDERS'),
+
+('Handstand przy ścianie', 'Stań na rękach przy ścianie. Utrzymuj napięty brzuch i prostą linię ciała.', 'SHOULDERS'),
+
+('Pompki na barki przy ścianie', 'W pozycji przy ścianie opuszczaj głowę w dół i wypychaj się w górę. Ruch kontrolowany.', 'SHOULDERS'),
+
+('Unoszenie ramion w opadzie', 'Pochyl się do przodu, unoś ręce na boki. Skup się na tylnej części barków.', 'SHOULDERS'),
+
+-- LEGS
+('Przysiady', 'Stopy na szerokość barków. Schodź biodrami w dół jak do krzesła. Kolana prowadź na zewnątrz, plecy proste.', 'LEGS'),
+
+('Wykroki', 'Zrób krok w przód i ugnij oba kolana. Kolano przedniej nogi nie wychodzi poza palce.', 'LEGS'),
+
+('Przysiady bułgarskie', 'Tylna noga na podwyższeniu. Schodź w dół kontrolując kolano przedniej nogi.', 'LEGS'),
+
+('Przysiady z wyskokiem', 'Z pozycji przysiadu dynamicznie wyskocz w górę. Ląduj miękko i kontrolowanie.', 'LEGS'),
+
+('Wall sit', 'Plecy o ścianę, uda równolegle do podłogi. Utrzymuj napięcie przez cały czas.', 'LEGS'),
+
+('Wspięcia na palce', 'Unieś pięty maksymalnie do góry, powoli opuść. Skup się na łydkach.', 'LEGS'),
+
+-- ARMS
+('Dipy na krześle', 'Oprzyj dłonie na krześle. Opuszczaj ciało, zginając łokcie w tył. Wypychaj się w górę.', 'ARMS'),
+
+('Uginanie ramion z gumą', 'Stań na gumie, zginaj ręce w łokciach. Kontroluj powrót.', 'ARMS'),
+
+('Pompki wąskie', 'Łokcie prowadź blisko ciała. Większy nacisk na tricepsy.', 'ARMS'),
+
+('Plank z dotykaniem barków', 'Z pozycji deski dotykaj naprzemiennie barków, utrzymując stabilny tułów.', 'ARMS'),
+
+('Uginanie młotkowe z gumą', 'Chwyt neutralny, zginaj ręce bez rotacji nadgarstka.', 'ARMS'),
+
+('Prostowanie ramion nad głową', 'Trzymaj gumę nad głową i prostuj ręce, izolując tricepsy.', 'ARMS'),
+
+-- CORE
+('Plank', 'Ciało w jednej linii, napięty brzuch i pośladki. Nie opuszczaj bioder.', 'CORE'),
+
+('Brzuszki', 'Unoszenie tułowia z kontrolą. Nie ciągnij głowy rękami.', 'CORE'),
+
+('Mountain climbers', 'Naprzemienne przyciąganie kolan do klatki w pozycji plank.', 'CORE'),
+
+('Russian twist', 'Skręty tułowia na siedząco. Utrzymuj napięty brzuch.', 'CORE'),
+
+('Unoszenie nóg leżąc', 'Unoszenie prostych nóg bez odrywania dolnych pleców.', 'CORE'),
+
+('Dead bug', 'Naprzemienne ruchy rąk i nóg, utrzymując stabilny kręgosłup.', 'CORE'),
+
+-- CARDIO
+('Bieg w miejscu', 'Biegnij w miejscu, utrzymując rytm i lekkie odbicie.', 'CARDIO'),
+
+('Skakanka (bez skakanki)', 'Symuluj skakanie, lądując miękko na śródstopiu.', 'CARDIO'),
+
+('Burpees', 'Przysiad → plank → pompka → wyskok. Zachowaj płynność ruchu.', 'CARDIO'),
+
+('Jumping jacks', 'Podskoki z rozkrokiem i klaśnięciem nad głową.', 'CARDIO'),
+
+('High knees', 'Bieg w miejscu z wysokim unoszeniem kolan.', 'CARDIO'),
+
+('Butt kicks', 'Bieg w miejscu, uderzając piętami o pośladki.', 'CARDIO');
 
 
 -- INSERT INTO workout_plans (name, owner_username) VALUES
