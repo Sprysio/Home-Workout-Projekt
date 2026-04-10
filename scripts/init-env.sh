@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Ensure newly created secret files are owner-readable/writable only.
+umask 077
+
 ENV_FILE=".env"
 FORCE="${1:-}"
 
@@ -21,5 +24,7 @@ cat > "$ENV_FILE" <<EOF
 JWT_SECRET=$JWT_SECRET
 JWT_SECRET_BASE64=$JWT_SECRET_BASE64
 EOF
+
+chmod 600 "$ENV_FILE"
 
 echo "Generated $ENV_FILE with JWT_SECRET and JWT_SECRET_BASE64."
