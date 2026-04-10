@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-
-const API_BASE = 'http://localhost:8080/api'
+import API_BASE_URL from '../config/api'
 
 function ExerciseDetails() {
   const { id } = useParams()
@@ -12,7 +11,7 @@ function ExerciseDetails() {
   useEffect(() => {
     const loadExercise = async () => {
       try {
-        const response = await fetch(`${API_BASE}/exercises/${id}`)
+        const response = await fetch(`${API_BASE_URL}/exercises/${id}`)
         const data = await response.json()
 
         if (!response.ok) {

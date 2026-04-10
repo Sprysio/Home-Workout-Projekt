@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-
-const API_BASE = 'http://localhost:8080/api'
+import API_BASE_URL from '../config/api'
 
 function Plans() {
   const [plans, setPlans] = useState([])
@@ -17,7 +16,7 @@ function Plans() {
     try {
       const token = localStorage.getItem('token')
 
-      const response = await fetch(`${API_BASE}/plans`, {
+      const response = await fetch(`${API_BASE_URL}/plans`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -50,7 +49,7 @@ function Plans() {
     try {
       const token = localStorage.getItem('token')
 
-      const response = await fetch(`${API_BASE}/plans`, {
+      const response = await fetch(`${API_BASE_URL}/plans`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -88,7 +87,7 @@ function Plans() {
     try {
       const token = localStorage.getItem('token')
 
-      const response = await fetch(`${API_BASE}/plans/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/plans/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,

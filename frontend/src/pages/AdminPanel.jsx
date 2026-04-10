@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import API_BASE_URL from '../config/api'
 
 function AdminPanel({ token, currentUsername }) {
   const [users, setUsers] = useState([])
@@ -11,7 +12,7 @@ function AdminPanel({ token, currentUsername }) {
     setMessage('')
 
     try {
-      const response = await fetch('http://localhost:8080/api/auth/users', {
+      const response = await fetch(`${API_BASE_URL}/auth/users`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -45,7 +46,7 @@ function AdminPanel({ token, currentUsername }) {
     setMessage('')
 
     try {
-      const response = await fetch(`http://localhost:8080/api/auth/users/${id}/role`, {
+      const response = await fetch(`${API_BASE_URL}/auth/users/${id}/role`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',

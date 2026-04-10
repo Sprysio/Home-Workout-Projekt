@@ -5,6 +5,8 @@ services:
     image: sprysio/homew-frontend:latest
     ports:
       - "80:80"
+    environment:
+      - API_GATEWAY_URL=http://api-gateway:8080
     depends_on:
       - api-gateway
     networks:

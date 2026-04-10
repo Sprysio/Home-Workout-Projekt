@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-
-const API_BASE = 'http://localhost:8080/api'
+import API_BASE_URL from '../config/api'
 
 function PlanDetails() {
   const { id } = useParams()
@@ -21,7 +20,7 @@ function PlanDetails() {
     try {
       const token = localStorage.getItem('token')
 
-      const response = await fetch(`${API_BASE}/plans/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/plans/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -42,7 +41,7 @@ function PlanDetails() {
 
   const loadExercises = async () => {
     try {
-      const response = await fetch(`${API_BASE}/exercises`)
+      const response = await fetch(`${API_BASE_URL}/exercises`)
       const data = await response.json()
 
       if (!response.ok) {
@@ -74,7 +73,7 @@ function PlanDetails() {
     try {
       const token = localStorage.getItem('token')
 
-      const response = await fetch(`${API_BASE}/plans/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/plans/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -104,7 +103,7 @@ function PlanDetails() {
     try {
       const token = localStorage.getItem('token')
 
-      const response = await fetch(`${API_BASE}/plans/${id}/add`, {
+      const response = await fetch(`${API_BASE_URL}/plans/${id}/add`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

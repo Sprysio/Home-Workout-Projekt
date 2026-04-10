@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
-
-const API_BASE = 'http://localhost:8080/api'
+import API_BASE_URL from '../config/api'
 
 function ExerciseForm({ onSuccess, editingExercise, onCancelEdit }) {
   const [formData, setFormData] = useState({
@@ -46,8 +45,8 @@ function ExerciseForm({ onSuccess, editingExercise, onCancelEdit }) {
 
       const isEditing = Boolean(editingExercise)
       const url = isEditing
-        ? `${API_BASE}/exercises/${editingExercise.id}`
-        : `${API_BASE}/exercises`
+        ? `${API_BASE_URL}/exercises/${editingExercise.id}`
+        : `${API_BASE_URL}/exercises`
 
       const method = isEditing ? 'PUT' : 'POST'
 
