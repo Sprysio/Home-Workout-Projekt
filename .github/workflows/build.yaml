@@ -123,7 +123,7 @@ jobs:
       - name: Scan ${{ matrix.service }} image with Trivy
         id: trivy
         continue-on-error: true
-        uses: aquasecurity/trivy-action@0.28.0
+        uses: aquasecurity/trivy-action@v0.35.0
         with:
           image-ref: ${{ env.DOCKER_USERNAME }}/${{ matrix.image }}:${{ steps.sha.outputs.short }}
           format: sarif
