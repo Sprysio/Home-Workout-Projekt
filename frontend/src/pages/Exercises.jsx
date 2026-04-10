@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ExerciseForm from '../components/ExerciseForm'
-
-const API_BASE = 'http://localhost:8080/api'
+import API_BASE_URL from '../config/api'
 
 function Exercises({ isAdmin }) {
   const [exercises, setExercises] = useState([])
@@ -15,7 +14,7 @@ function Exercises({ isAdmin }) {
     setError('')
 
     try {
-      const response = await fetch(`${API_BASE}/exercises`)
+      const response = await fetch(`${API_BASE_URL}/exercises`)
       const data = await response.json()
 
       if (!response.ok) {
@@ -44,7 +43,7 @@ function Exercises({ isAdmin }) {
     try {
       const token = localStorage.getItem('token')
 
-      const response = await fetch(`${API_BASE}/exercises/${id}`, {
+      const response = await fetch(`${API_BASE_URL}/exercises/${id}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${token}`,
