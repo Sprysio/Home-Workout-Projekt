@@ -14,6 +14,7 @@ FROM nginx:1.28.3-alpine3.23@sha256:a8b39bd9cf0f83869a2162827a0caf6137ddf759d50a
 LABEL maintainer="app-team" \
       version="1.0.0" \
       description="Frontend - React 19 SPA served via Nginx with API proxy"
+RUN apk upgrade --no-cache
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.default.conf.template /etc/nginx/templates/default.conf.template
 EXPOSE 80
